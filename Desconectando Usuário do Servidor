@@ -1,0 +1,29 @@
+@echo off & setlocal
+cls
+echo Desconecta usuario do SRV-VDI-02 (SGE)
+echo .
+set usuario=
+set /p usuario=Login: 
+set filetemp=%temp%\vdi%random%.tmp
+
+qwinsta /server:srv-vdi-02 |findstr -i %usuario% |findstr rdp > %filetemp%
+set /p VAR=<%filetemp%
+del /q /f %filetemp% >nul
+if "%VAR%." == "." (
+	echo .
+	echo .
+	echo usuario %usuario% nao encontrado
+	pause >nul
+	exit /b
+)
+echo  SESSIONNAME       USERNAME                 ID  STATE
+echo %VAR%
+call :sub1 %VAR%
+	echo .
+	echo .
+echo sessao finalizada
+pause >nul
+exit /b
+
+:sub1
+rwinsta %3 /server:srv-vdi-02
